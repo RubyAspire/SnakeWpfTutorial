@@ -1,0 +1,165 @@
+﻿<Window x:Class="SnakeGameWPFTutorial.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SnakeGameWPFTutorial"
+        xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+        mc:Ignorable="d"
+        x:Name="window"
+        Title="SnakeWpf - Score: 0 - Game speed: 0" SizeToContent="WidthAndHeight"
+        ContentRendered="Window_ContentRendered"
+        KeyUp="Window_KeyUp"
+        ResizeMode="NoResize" WindowStyle="None" WindowStartupLocation="CenterScreen"
+        Background="Black" MouseDown="Window_MouseDown"
+        Height="400" Width="400">
+    <Window.Resources>
+        <CollectionViewSource Source="{Binding ElementName=window, Path=HighScores}" x:Key="HighScoreViewSource">
+            <CollectionViewSource.SortDescriptions>
+                <scm:SortDescription Direction="Descending" PropertyName="Score"/>
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
+    </Window.Resources>
+    <DockPanel Background="Black">
+        <Grid DockPanel.Dock="Top" Name="pnlTitleBar">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid.Resources>
+                <Style TargetType="TextBlock" >
+                    <Setter Property="FontFamily" Value="Consolas"/>
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="FontSize" Value="24"/>
+                    <Setter Property="FontWeight" Value="Bold"/>
+                </Style>
+            </Grid.Resources>
+
+            <WrapPanel Margin="10 0 0 0">
+                <TextBlock Text="Score: "/>
+                <TextBlock x:Name="txtStatusScore" Text="0"/>
+            </WrapPanel>
+            
+            <WrapPanel Grid.Column="1">
+                <TextBlock Text="Speed: "/>
+                <TextBlock Name="txtStatusSpeed" Text="0"/>
+            </WrapPanel>
+            <Button Grid.Column="2" DockPanel.Dock="Right"
+                    Background="Transparent" Click="BtnClose_Click"
+                    Foreground="White"  FontWeight="Bold"
+                    FontSize="20" BorderThickness="0"
+                    Name="btnClose" Padding="10 0" 
+                    Content="X"/>
+        </Grid>
+        
+        <Border BorderBrush="Black" BorderThickness="5">
+            <Canvas Name="GameArea" ClipToBounds="True" Height="400" Width="400">
+                <Border BorderBrush="Silver" BorderThickness="2" 
+                        Canvas.Top="50" Canvas.Left="50" 
+                        Height="300" Width="300"
+                        Panel.ZIndex="1" Name="borWelcomeMessage">
+                    <StackPanel Orientation="Vertical" Background="AliceBlue">
+                        <TextBlock Text="SNAKE WPF" FontSize="40"
+                                   FontWeight="Bold" FontFamily="Consolas"
+                                   TextAlignment="Center"/>
+                        <TextBlock TextWrapping="Wrap" FontSize="16"
+                                   Margin="20">
+                            Use the Arrow keys to control the green snake
+                            Make it eat the red apples, but be sure not to
+                            crash into the walls or the tail of the snake.
+                        </TextBlock>
+                        <TextBlock Text="Press SPACE to start!"
+                                   FontWeight="Bold" Foreground="Maroon"
+                                   FontSize="20" HorizontalAlignment="Center"/>
+                        <Button Content="Show High Score List"
+                                Margin="50" Padding="10 5"
+                                Name="btnShowHighList"  Click="BtnHighList_Click"/>
+                    </StackPanel>
+                </Border>
+
+                <Border BorderBrush="Silver" BorderThickness="2"
+                        Height="300" Width="300"
+                        Canvas.Top="50" Canvas.Left="50"
+                        Background="AliceBlue" Panel.ZIndex="1"
+                        Name="borHighScoreList" Visibility="Collapsed">
+                    <StackPanel>
+                        <Border BorderBrush="Silver" BorderThickness="2">
+                            <TextBlock Text="High Score List"
+                                   FontWeight="Bold" FontSize="35"
+                                   HorizontalAlignment="Center"/>
+                        </Border>
+
+                        <ItemsControl ItemsSource="{Binding Source={StaticResource HighScoreViewSource}}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <DockPanel Margin="7">
+                                        <TextBlock Text="{Binding PlayerName}"
+                                                   DockPanel.Dock="Left" FontSize="22"/>
+                                        <TextBlock Text="{Binding Score}" FontSize="22"
+                                                   DockPanel.Dock="Right" HorizontalAlignment="Right"/>
+                                    </DockPanel>   
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
+                <Border BorderBrush="Silver" BorderThickness="2"
+                        Height="300" Width="300"
+                        Canvas.Top="50" Canvas.Left="50"
+                        Background="AliceBlue" Panel.ZIndex="1"
+                        Visibility="Collapsed" Name="borNewHighScore">
+                    <StackPanel>
+                        <TextBlock Text="New Highscore!"
+                                   FontSize="30" FontWeight="Bold"
+                                   HorizontalAlignment="Center"/>
+                        <TextBlock TextWrapping="Wrap"
+                                   Margin="20" FontSize="15">
+                            Congratulations - you made it into the
+                            SnakeWPF highscore list! Please enter your
+                            name below...
+                        </TextBlock>
+
+                        <TextBox x:Name="txtPlayerName" FontSize="28"
+                                 FontWeight="Bold" MaxLength="8"
+                                 Margin="20"/>
+
+                        <Button Content="Add to highscore list"
+                                FontSize="18" Padding="10 5"
+                                HorizontalAlignment="Center"
+                                Name="btnAddTpHighScoreList"
+                                Click="BtnAddToHighScoreList_Click"/>
+                    </StackPanel>
+                </Border>
+
+                <Border BorderBrush="Silver" BorderThickness="2"
+                        Height="300" Width="300"
+                        Canvas.Top="50" Canvas.Left="50"
+                        Background="AliceBlue" Panel.ZIndex="1"
+                        Visibility="Collapsed"
+                        Name="borEndGame">
+                    <StackPanel>
+                        <TextBlock Text="Oh no!" FontSize="35"
+                                   FontWeight="Bold" HorizontalAlignment="Center"
+                                   Margin="10"/>
+                        <TextBlock Text="...you died!" FontSize="25"
+                                   FontWeight="Bold" HorizontalAlignment="Center"/>
+                        <TextBlock Text="Your score:" FontSize="18"
+                                   HorizontalAlignment="Center"
+                                   Margin="15"/>
+                        <TextBlock x:Name="txtFinalScore" Text="0"
+                                   FontSize="50" FontWeight="Bold"
+                                   Foreground="Maroon" HorizontalAlignment="Center"/>
+                        <TextBlock Text="Press SPACE to start a new game"
+                                   FontSize="15" HorizontalAlignment="Center"
+                                   Margin="20"/>
+                    </StackPanel>
+                    
+                </Border>
+            </Canvas>
+        </Border>
+    </DockPanel>
+    
+</Window>
